@@ -22,6 +22,29 @@ from .helpers import get_unique_id
 
 _LOGGER = logging.getLogger(__name__)
 
+# Create maps for all CCs and platforms
+# where there is more than one entity per CC.
+
+NOTIFICATION_CC_LABEL_TO_PROPERTY = {
+    "Smoke": "Smoke Alarm",
+    "Carbon Monoxide": "CO Alarm",
+    "Carbon Dioxide": "CO2 Alarm",
+    "Heat": "Heat Alarm",
+    "Flood": "Water Alarm",
+    "Access Control": "Access Control",
+    "Burglar": "Home Security",
+    "Power Management": "Power Management",
+    "System": "System",
+    "Emergency": "Siren",
+    "Clock": "Clock",
+    "Appliance": "Appliance",
+    "HomeHealth": "Home Health",
+}
+
+CC_ID_LABEL_TO_PROPERTY = {
+    113: NOTIFICATION_CC_LABEL_TO_PROPERTY,
+}
+
 
 @dataclass
 class ValueID:
