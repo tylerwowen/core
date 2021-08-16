@@ -3,7 +3,9 @@
 import asyncio
 import copy
 from importlib import import_module
+import json
 import logging
+from pathlib import Path
 from pprint import pprint
 
 import voluptuous as vol
@@ -296,6 +298,13 @@ async def async_get_ozw_migration_data(hass):
             "unique_id": unique_id,
             "entity_entry": unique_entries[unique_id],
         }
+
+    # FIXME: Remove after testing is done
+    save_path = Path(hass.config.path("migratation_data_zwave.json"))
+    data_to_save = dict(data_to_migrate)
+    for unique_id, data in data_to_save.items():
+        data.pop("entity_entry")
+    await hass.async_add_executor_job(save_path.write_text, json.dumps(data_to_save))
 
     return data_to_migrate
 
@@ -593,6 +602,7 @@ async def async_setup_entry(hass, config_entry):  # noqa: C901
             "Z-Wave network is complete. All nodes on the network have been queried"
         )
         hass.bus.fire(const.EVENT_NETWORK_COMPLETE)
+        hass.add_job(async_get_ozw_migration_data(hass))
 
     def network_complete_some_dead():
         """Handle the querying of all nodes on network."""
