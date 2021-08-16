@@ -22,6 +22,15 @@ from .helpers import get_unique_id
 
 _LOGGER = logging.getLogger(__name__)
 
+# Use the following data to map entity entries
+# between zwave and zwave_js:
+# entity domain
+# node id
+# command class
+# instance to endpoint
+# unit of measurement
+# label map to property if map has item
+
 # Create maps for all CCs and platforms
 # where there is more than one entity per CC.
 
