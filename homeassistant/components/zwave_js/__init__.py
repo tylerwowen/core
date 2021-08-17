@@ -129,6 +129,7 @@ async def async_setup_entry(  # noqa: C901
     entry_hass_data[DATA_PLATFORM_SETUP] = {}
 
     registered_unique_ids: dict[str, dict[str, set[str]]] = defaultdict(dict)
+    all_discovered_values: dict[str, ZwaveDiscoveryInfo] = {}
 
     async def async_on_node_ready(node: ZwaveNode) -> None:
         """Handle node ready event."""
@@ -175,6 +176,10 @@ async def async_setup_entry(  # noqa: C901
             # Capture discovery info for values we want to watch for updates
             if disc_info.assumed_state:
                 value_updates_disc_info[disc_info.primary_value.value_id] = disc_info
+
+            all_discovered_values[
+                f"{node.node_id}_{disc_info.primary_value.value_id}"
+            ] = disc_info
 
         # add listener for value updated events if necessary
         if value_updates_disc_info:
