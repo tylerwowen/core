@@ -35,12 +35,22 @@ _LOGGER = logging.getLogger(__name__)
 # entity domain
 # node id
 # command class
-# instance to endpoint
+# node instance (index 1) to endpoint index (index 0)
 # unit of measurement
 # label map to property if map has item
 
 # Create maps for all CCs and platforms
 # where there is more than one entity per CC.
+
+# CC 49: https://github.com/zwave-js/node-zwave-js/blob/master/packages/config/config/sensorTypes.json
+# Map: label to propertyName
+# CC 50: https://github.com/zwave-js/node-zwave-js/blob/master/packages/config/config/meters.json
+# Map: label to propertyKeyName
+# CC 113: https://github.com/zwave-js/node-zwave-js/blob/master/packages/config/config/notifications.json
+# Map: label to propertyName
+# TODO: How to map CC 113 completely.
+# Something corresponding to propertyKeyName missing in zwave
+# Check if we can get the meterType from openzwave
 
 NOTIFICATION_CC_LABEL_TO_PROPERTY = {
     "Smoke": "Smoke Alarm",
