@@ -283,6 +283,7 @@ async def async_get_ozw_migration_data(hass):
         unique_id = compute_value_unique_id(node, entity_values.primary)
         if unique_id not in unique_entries:
             continue
+        entity_entry = unique_entries[unique_id]
         device_identifier, _ = node_device_id_and_name(
             node, entity_values.primary.instance
         )
@@ -290,13 +291,14 @@ async def async_get_ozw_migration_data(hass):
         data_to_migrate[unique_id] = {
             "node_id": node.node_id,
             "node_instance": entity_values.primary.instance,
-            "device_id": device_entry.id,
             "command_class": entity_values.primary.command_class,
             "command_class_label": entity_values.primary.label,
-            "value_units": entity_values.primary.units,
             "value_index": entity_values.primary.index,
+            "device_id": device_entry.id,
+            "domain": entity_entry.domain,
+            "entity_id": entity_entry.entity_id,
             "unique_id": unique_id,
-            "entity_entry": unique_entries[unique_id],
+            "unit_of_measurement": entity_entry.unit_of_measurement,
         }
 
     # FIXME: Remove after testing is done
