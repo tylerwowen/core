@@ -301,12 +301,8 @@ async def async_get_ozw_migration_data(hass):
             "unit_of_measurement": entity_entry.unit_of_measurement,
         }
 
-    # FIXME: Remove after testing is done
-    save_path = Path(hass.config.path("migratation_data_zwave.json"))
-    data_to_save = dict(data_to_migrate)
-    for unique_id, data in data_to_save.items():
-        data.pop("entity_entry")
-    await hass.async_add_executor_job(save_path.write_text, json.dumps(data_to_save))
+    save_path = Path(hass.config.path("zwave_migratation_data.json"))
+    await hass.async_add_executor_job(save_path.write_text, json.dumps(data_to_migrate))
 
     return data_to_migrate
 
