@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import json
 import logging
+from pathlib import Path
 
 from zwave_js_server.client import Client as ZwaveClient
 from zwave_js_server.model.value import Value as ZwaveValue
@@ -100,6 +102,11 @@ async def async_get_migration_data(
             "unique_id": unique_id,
             "unit_of_measurement": entity_entry.unit_of_measurement,
         }
+
+    save_path = Path(hass.config.path("zwave_js_migratation_data.json"))
+    await hass.async_add_executor_job(save_path.write_text, json.dumps(data))
+
+    _LOGGER.debug("Collected migration data: %s", data)
 
     return data
 
