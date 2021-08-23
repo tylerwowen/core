@@ -304,6 +304,8 @@ async def async_get_ozw_migration_data(hass):
     save_path = Path(hass.config.path("zwave_migratation_data.json"))
     await hass.async_add_executor_job(save_path.write_text, json.dumps(data_to_migrate))
 
+    _LOGGER.debug("Collected migration data: %s", data_to_migrate)
+
     return data_to_migrate
 
 
