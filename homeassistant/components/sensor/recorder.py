@@ -115,7 +115,7 @@ WARN_UNSUPPORTED_UNIT = "sensor_warn_unsupported_unit"
 WARN_UNSTABLE_UNIT = "sensor_warn_unstable_unit"
 
 
-def _get_entities(hass: HomeAssistant) -> list[tuple[str, str, str | None]]:
+def _get_entities(hass: HomeAssistant) -> list[tuple[str, str, str | None, str | None]]:
     """Get (entity_id, state_class, device_class) of all sensors for which to compile statistics."""
     all_sensors = hass.states.all(DOMAIN)
     entity_ids = []
@@ -124,7 +124,8 @@ def _get_entities(hass: HomeAssistant) -> list[tuple[str, str, str | None]]:
         if (state_class := state.attributes.get(ATTR_STATE_CLASS)) not in STATE_CLASSES:
             continue
         device_class = state.attributes.get(ATTR_DEVICE_CLASS)
-        entity_ids.append((state.entity_id, state_class, device_class))
+        unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+        entity_ids.append((state.entity_id, state_class, device_class, unit))
 
     return entity_ids
 
@@ -283,11 +284,11 @@ def reset_detected(
 
 
 def _wanted_statistics(
-    entities: list[tuple[str, str, str | None]]
+    entities: list[tuple[str, str, str | None, str | None]]
 ) -> dict[str, set[str]]:
     """Prepare a dict with wanted statistics for entities."""
     wanted_statistics = {}
-    for entity_id, state_class, device_class in entities:
+    for entity_id, state_class, device_class, _ in entities:
         if device_class in DEVICE_CLASS_STATISTICS[state_class]:
             wanted_statistics[entity_id] = DEVICE_CLASS_STATISTICS[state_class][
                 device_class
@@ -333,7 +334,7 @@ def compile_statistics(  # noqa: C901
         )
         history_list = {**history_list, **_history_list}
 
-    for entity_id, state_class, device_class in entities:
+    for entity_id, state_class, device_class, _ in entities:
         if entity_id not in history_list:
             continue
 
@@ -483,7 +484,7 @@ def list_statistic_ids(hass: HomeAssistant, statistic_type: str | None = None) -
 
     statistic_ids = {}
 
-    for entity_id, state_class, device_class in entities:
+    for entity_id, state_class, device_class, native_unit in entities:
         if device_class in DEVICE_CLASS_STATISTICS[state_class]:
             provided_statistics = DEVICE_CLASS_STATISTICS[state_class][device_class]
         else:
@@ -501,12 +502,6 @@ def list_statistic_ids(hass: HomeAssistant, statistic_type: str | None = None) -
             and state.attributes.get(ATTR_STATE_CLASS) == STATE_CLASS_MEASUREMENT
         ):
             continue
-
-        metadata = statistics.get_metadata(hass, entity_id)
-        if metadata:
-            native_unit: str | None = metadata["unit_of_measurement"]
-        else:
-            native_unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
 
         if device_class not in UNIT_CONVERSIONS:
             statistic_ids[entity_id] = native_unit
